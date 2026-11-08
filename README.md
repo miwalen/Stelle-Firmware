@@ -39,12 +39,12 @@ No schematic or wiring diagram yet. Board photos are pending.
 
 1. Install the **ESP32 board package** in Arduino IDE (or `arduino-cli`).
 2. Select the classic-ESP32 board variant (the one with Bluetooth Classic — **not** an S3/C3/BLE-only part).
-3. Open `Stelle.ino` and upload.
+3. Open `central/Stelle.ino` and upload.
 
 ```bash
 # arduino-cli equivalent (board FQBN to be confirmed)
-arduino-cli compile --fqbn esp32:esp32:esp32 .
-arduino-cli upload  --fqbn esp32:esp32:esp32 -p <PORT> .
+arduino-cli compile --fqbn esp32:esp32:esp32 central
+arduino-cli upload  --fqbn esp32:esp32:esp32 -p <PORT> central
 ```
 
 ## Serial protocol
@@ -72,19 +72,27 @@ Packet structs (`Vector3Data`, `QuaternionData`, `InputChannelsData`) are `memcp
 ## Repository layout
 
 ```
-Stelle.ino                     entry point, object wiring, task launch
-Communication.cpp/.h           binary protocol, UART + USB CDC tasks
-ConfigManager.cpp/.h           NVS-backed configuration
-MechLib.cpp/.h                 Button, EncoderJoints, InputChannels, KinematicChain
-GeoLib.h                       Vector3 / Quaternion math
-ForwardKinematicsComputer.*    FK task
-SensorReader.*                 ADS1115 sampling task
-PowerManager.*                 power-rail keeper task
-Logger.h                       fixed ring-buffer logger
-Mutexes.cpp/.h                 shared-state semaphores
-Packets.h                      wire-format structs and packers
-ADS1115.cpp/.h                 ADC driver
+Stelle-Firmware/
+├── central/                   ESP32 firmware — central (teleoperator) side
+│   ├── Stelle.ino             entry point, object wiring, task launch
+│   ├── Communication.cpp/.h   binary protocol, UART + USB CDC tasks
+│   ├── ConfigManager.cpp/.h   NVS-backed configuration
+│   ├── MechLib.cpp/.h         Button, EncoderJoints, InputChannels, KinematicChain
+│   ├── GeoLib.h               Vector3 / Quaternion math
+│   ├── ForwardKinematicsComputer.*  FK task
+│   ├── SensorReader.*         ADS1115 sampling task
+│   ├── PowerManager.*         power-rail keeper task
+│   ├── Logger.h               fixed ring-buffer logger
+│   ├── Mutexes.cpp/.h         shared-state semaphores
+│   ├── Packets.h              wire-format structs and packers
+│   └── ADS1115.cpp/.h         ADC driver
+├── docs/                      architecture, hardware, protocol notes
+├── README.md
+└── LICENSE
 ```
+
+Planned: `peripheral/` firmware for the downstream board, sharing a `common/`
+protocol layer with `central/`.
 
 ## Roadmap
 

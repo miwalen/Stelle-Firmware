@@ -36,11 +36,15 @@ analog pots ──▶ ADS1115 (I2C, Wire1) ──▶ SensorReader task
 ```
 
 Shared objects (`config`, `channels`, `Kinematics`, `log1`, `currentPowerState`)
-are declared in `Stelle.ino` and `extern`-ed everywhere else.
+are declared in `central/Stelle.ino` and `extern`-ed everywhere else.
+
+All firmware sources live under `central/` (the teleoperator side). A future
+`peripheral/` build will share `common/` — currently only `Packets.h` carries
+the wire contract, so keep protocol types out of `Communication.cpp`.
 
 ## Synchronisation
 
-`Mutexes.h` exposes one semaphore per shared resource:
+`central/Mutexes.h` exposes one semaphore per shared resource:
 
 - `mutexLog` — guards the logger
 - `mutexQuaternionOffset`, `mutexVector3Offset`, `mutexIMUQuaternionOffset` — calibration state

@@ -1,5 +1,7 @@
 # Arduino build output
 build/
+central/build/
+peripheral/build/
 *.elf
 *.bin
 *.hex
@@ -8,6 +10,11 @@ build/
 *.d
 *.o
 *.a
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
 
 # VS Code
 .vscode/*
@@ -29,4 +36,3 @@ config.local.h
 
 # Logs
 *.log
-
