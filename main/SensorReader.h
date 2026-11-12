@@ -6,7 +6,7 @@
 namespace stelle {
 
 void TaskSensorReader(void* parameter);
-void initTaskSensorReader(bool adsOk);
+void initTaskSensorReader();
 
 } // namespace stelle
 

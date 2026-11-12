@@ -7,8 +7,6 @@
 
 namespace stelle {
 
-PowerState currentPowerState;
-
 TaskHandle_t TaskPowerKeeperHandle = NULL;
 
 void PowerState::begin() {

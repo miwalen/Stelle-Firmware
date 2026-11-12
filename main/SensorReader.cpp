@@ -1,20 +1,26 @@
 #include "SensorReader.h"
 
 #include "ADS1115.h"
+#include "ForwardKinematicsComputer.h"
 #include "Logger.h"
 #include "MechLib.h"
 #include "Mutexes.h"
-#include "Stelle.h"
 #include "freertos/task.h"
+#include "setup.h"
 
 namespace stelle {
 
 TaskHandle_t TaskSensorReaderHandle = NULL;
 
+ADS1115 ads1;
+ADS1115 ads2;
+
 // Hasil pembacaan terakhir untuk 2 ADS x 3 channel
 static float raw[2][3] = {0};
 
-void initTaskSensorReader(bool adsOk) {
+void initTaskSensorReader() {
+    const bool adsOk = ads1.begin(Wire1, ADS1115::ADDR_GND) && ads2.begin(Wire1, ADS1115::ADDR_SDA);
+
     if (!adsOk) {
         logE(log1, "ADS1115: one or all failed, check the wiring");
     } else {

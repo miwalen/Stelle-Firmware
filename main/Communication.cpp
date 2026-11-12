@@ -2,8 +2,12 @@
 
 #include <cstring>
 
+#include "ConfigManager.h"
+#include "ForwardKinematicsComputer.h"
 #include "Logger.h"
 #include "Mutexes.h"
+#include "PowerManager.h"
+#include "setup.h"
 
 namespace stelle {
 

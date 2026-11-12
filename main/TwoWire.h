@@ -58,9 +58,7 @@ private:
     uint8_t _rxIndex = 0;
 };
 
-// Instance global. Index tidak dipakai (hanya ada satu bus I2C di firmware
-// ini), dipertahankan supaya kode tetap bisa menulis Wire1 seperti di Arduino.
-extern TwoWire Wire1;
+
 
 } // namespace stelle
 

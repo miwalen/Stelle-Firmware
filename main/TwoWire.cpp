@@ -17,8 +17,6 @@ struct TwoWire::BusHandle {
     uint32_t frequency = 100000;
 };
 
-TwoWire Wire1;
-
 TwoWire::~TwoWire() { end(); }
 
 bool TwoWire::begin(int pinSda, int pinScl, uint32_t frequency) {

@@ -1,7 +1,7 @@
 # Satu file per komponen Arduino, tidak ada penggabungan.
 idf_component_register(
     SRCS
-        "Stelle.cpp"
+        "setup.cpp"
         "TwoWire.cpp"
         "HardwareSerial.cpp"
         "ADS1115.cpp"

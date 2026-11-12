@@ -6,8 +6,6 @@
 
 namespace stelle {
 
-ConfigManager config;
-
 void ConfigManager::copyField(char* dst, size_t len, const char* src) {
     std::memset(dst, 0, len);
     if (src == nullptr) return;

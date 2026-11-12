@@ -7,9 +7,6 @@
 
 namespace stelle {
 
-// Instance global, sama seperti deklarasi di Stelle.ino versi Arduino.
-Logger log1;
-
 namespace {
 
 constexpr size_t LINE_MAX = 192;

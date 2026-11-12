@@ -2,14 +2,12 @@
 
 #include "MechLib.h"
 #include "Mutexes.h"
-#include "Stelle.h"
 #include "freertos/task.h"
+#include "setup.h"
 
 namespace stelle {
 
 TaskHandle_t TaskFKComputerHandle = NULL;
-
-KinematicChain Kinematics;
 
 void initTaskForwardKinematicsComputer() {
     // =========================================================================

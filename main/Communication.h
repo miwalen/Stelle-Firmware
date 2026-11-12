@@ -5,7 +5,7 @@
 #include <cstdint>
 
 #include "HardwareSerial.h"
-#include "Stelle.h"
+#include "Packets.h"
 
 #define HEADER_1 0xAA
 #define HEADER_2 0x55
