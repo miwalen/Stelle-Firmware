@@ -1,0 +1,18 @@
+menu "Stelle firmware"
+
+    config STELLE_POWER_POLL_MS
+        int "Power keeper poll interval (ms)"
+        range 5 1000
+        default 50
+        help
+            How often PowerKeeper re-applies the rail state on GPIO27.
+            This also bounds the latency of a 0x50 power-off command.
+
+    config STELLE_RING_BYTES
+        int "Log ring buffer size (bytes)"
+        range 256 16384
+        default 4096
+        help
+            Size of the line-oriented log ring buffer.
+
+endmenu
