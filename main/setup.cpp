@@ -19,6 +19,7 @@ namespace stelle {
 TwoWire Wire1;
 HardwareSerial SerialComA(1);
 HardwareSerial Serial(0);
+Preferences prefs;
 
 KinematicChain Kinematics;
 InputChannels channels;
@@ -48,8 +49,8 @@ void setupSystem() {
     // 4. Inisialisasi Bus Peripheral Hardware (I2C SDA=25, SCL=26)
     Wire1.begin(25, 26);
 
-    // 5. Muat Konfigurasi dari NVS
-    config.begin();
+    // 5. Muat Konfigurasi dari NVS menggunakan Preferences global
+    config.begin(&prefs);
 
     // 6. Jalankan FreeRTOS Tasks
     initTaskSerialComA();

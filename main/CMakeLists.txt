@@ -4,6 +4,7 @@ idf_component_register(
         "setup.cpp"
         "TwoWire.cpp"
         "HardwareSerial.cpp"
+        "Preferences.cpp"
         "ADS1115.cpp"
         "Communication.cpp"
         "ConfigManager.cpp"

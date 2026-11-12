@@ -1,8 +1,9 @@
 #include "ConfigManager.h"
 
 #include <cstring>
-
-#include "nvs.h"
+#include "Logger.h"
+#include "Preferences.h"
+#include "setup.h"
 
 namespace stelle {
 
@@ -15,20 +16,18 @@ void ConfigManager::copyField(char* dst, size_t len, const char* src) {
 
 void ConfigManager::getString(const char* key, char* out, size_t outLen,
                               const char* defaultValue) {
-    nvs_handle_t h = 0;
-    size_t len = outLen;
-
-    if (nvs_open(NAMESPACE, NVS_READONLY, &h) == ESP_OK) {
-        if (nvs_get_str(h, key, out, &len) != ESP_OK) {
-            copyField(out, outLen, defaultValue);
+    if (_prefs != nullptr) {
+        if (_prefs->begin(NAMESPACE, true)) {
+            _prefs->getString(key, out, outLen, defaultValue);
+            _prefs->end();
+            return;
         }
-        nvs_close(h);
-    } else {
-        copyField(out, outLen, defaultValue);
     }
+    copyField(out, outLen, defaultValue);
 }
 
-bool ConfigManager::begin() {
+bool ConfigManager::begin(Preferences* preferences) {
+    _prefs = preferences;
     applyConfig();
     logI(log1, "config: configuration loaded");
     return true;
@@ -47,11 +46,11 @@ void ConfigManager::applyConfig() {
 }
 
 void ConfigManager::clearAll() {
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        nvs_erase_all(h);
-        nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr) {
+        if (_prefs->begin(NAMESPACE, false)) {
+            _prefs->clear();
+            _prefs->end();
+        }
     }
     applyConfig();
 }
@@ -78,16 +77,15 @@ void ConfigManager::setVector3Offset(Vector3Packet packet) {
 }
 
 // ==========================================
-// SAVE / LOAD (baca-tulis flash / NVS)
+// SAVE / LOAD (baca-tulis flash / NVS via Preferences)
 // ==========================================
 
 // Wi-Fi & BT
 void ConfigManager::saveWifiSSID(const char* ssid) {
     copyField(wifiSSID, sizeof(wifiSSID), ssid);
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_str(h, "wifi_ssid", wifiSSID) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putString("wifi_ssid", wifiSSID);
+        _prefs->end();
     }
 }
 
@@ -97,10 +95,9 @@ void ConfigManager::loadWifiSSID(char* out, size_t outLen, const char* defaultVa
 
 void ConfigManager::saveWifiPassword(const char* password) {
     copyField(wifiPassword, sizeof(wifiPassword), password);
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_str(h, "wifi_pass", wifiPassword) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putString("wifi_pass", wifiPassword);
+        _prefs->end();
     }
 }
 
@@ -110,10 +107,9 @@ void ConfigManager::loadWifiPassword(char* out, size_t outLen, const char* defau
 
 void ConfigManager::saveBtName(const char* name) {
     copyField(btName, sizeof(btName), name);
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_str(h, "bt_name", btName) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putString("bt_name", btName);
+        _prefs->end();
     }
 }
 
@@ -123,10 +119,9 @@ void ConfigManager::loadBtName(char* out, size_t outLen, const char* defaultValu
 
 void ConfigManager::saveBtPassword(const char* password) {
     copyField(btPassword, sizeof(btPassword), password);
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_str(h, "bt_pass", btPassword) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putString("bt_pass", btPassword);
+        _prefs->end();
     }
 }
 
@@ -137,22 +132,19 @@ void ConfigManager::loadBtPassword(char* out, size_t outLen, const char* default
 // IMU State
 void ConfigManager::saveUseIMU(bool enable) {
     useIMU = enable;
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_u8(h, "use_imu", enable ? 1 : 0) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putBool("use_imu", enable);
+        _prefs->end();
     }
 }
 
 bool ConfigManager::loadUseIMU(bool defaultValue) {
-    nvs_handle_t h = 0;
-    uint8_t flag = defaultValue ? 1 : 0;
-
-    if (nvs_open(NAMESPACE, NVS_READONLY, &h) == ESP_OK) {
-        nvs_get_u8(h, "use_imu", &flag);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, true)) {
+        bool res = _prefs->getBool("use_imu", defaultValue);
+        _prefs->end();
+        return res;
     }
-    return flag != 0;
+    return defaultValue;
 }
 
 // Quaternion / Vector3
@@ -160,10 +152,9 @@ void ConfigManager::saveIMUQuaternionOffset(QuaternionPacket packet) {
     uint8_t buffer[16];
     packet.getPacket(buffer);
 
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_blob(h, "imu_quat_off", buffer, packet.size()) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putBytes("imu_quat_off", buffer, packet.size());
+        _prefs->end();
     }
 }
 
@@ -171,13 +162,12 @@ QuaternionPacket ConfigManager::loadIMUQuaternionOffset() {
     QuaternionPacket packet;
     uint8_t buffer[16];
 
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READONLY, &h) == ESP_OK) {
-        size_t len = sizeof(buffer);
-        if (nvs_get_blob(h, "imu_quat_off", buffer, &len) == ESP_OK && len == packet.size()) {
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, true)) {
+        size_t len = _prefs->getBytes("imu_quat_off", buffer, sizeof(buffer));
+        if (len == packet.size()) {
             packet.setPacket(buffer);
         }
-        nvs_close(h);
+        _prefs->end();
     }
     return packet;
 }
@@ -186,10 +176,9 @@ void ConfigManager::saveQuaternionOffset(QuaternionPacket packet) {
     uint8_t buffer[16];
     packet.getPacket(buffer);
 
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_blob(h, "quat_off", buffer, packet.size()) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putBytes("quat_off", buffer, packet.size());
+        _prefs->end();
     }
 }
 
@@ -197,13 +186,12 @@ QuaternionPacket ConfigManager::loadQuaternionOffset() {
     QuaternionPacket packet;
     uint8_t buffer[16];
 
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READONLY, &h) == ESP_OK) {
-        size_t len = sizeof(buffer);
-        if (nvs_get_blob(h, "quat_off", buffer, &len) == ESP_OK && len == packet.size()) {
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, true)) {
+        size_t len = _prefs->getBytes("quat_off", buffer, sizeof(buffer));
+        if (len == packet.size()) {
             packet.setPacket(buffer);
         }
-        nvs_close(h);
+        _prefs->end();
     }
     return packet;
 }
@@ -212,10 +200,9 @@ void ConfigManager::saveVector3Offset(Vector3Packet packet) {
     uint8_t buffer[12];
     packet.getPacket(buffer);
 
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READWRITE, &h) == ESP_OK) {
-        if (nvs_set_blob(h, "vec3_off", buffer, packet.size()) == ESP_OK) nvs_commit(h);
-        nvs_close(h);
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, false)) {
+        _prefs->putBytes("vec3_off", buffer, packet.size());
+        _prefs->end();
     }
 }
 
@@ -223,13 +210,12 @@ Vector3Packet ConfigManager::loadVector3Offset() {
     Vector3Packet packet;
     uint8_t buffer[12];
 
-    nvs_handle_t h = 0;
-    if (nvs_open(NAMESPACE, NVS_READONLY, &h) == ESP_OK) {
-        size_t len = sizeof(buffer);
-        if (nvs_get_blob(h, "vec3_off", buffer, &len) == ESP_OK && len == packet.size()) {
+    if (_prefs != nullptr && _prefs->begin(NAMESPACE, true)) {
+        size_t len = _prefs->getBytes("vec3_off", buffer, sizeof(buffer));
+        if (len == packet.size()) {
             packet.setPacket(buffer);
         }
-        nvs_close(h);
+        _prefs->end();
     }
     return packet;
 }

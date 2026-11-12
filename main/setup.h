@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "MechLib.h"
 #include "PowerManager.h"
+#include "Preferences.h"
 #include "TwoWire.h"
 
 namespace stelle {
@@ -16,6 +17,7 @@ namespace stelle {
 extern TwoWire Wire1;
 extern HardwareSerial SerialComA;
 extern HardwareSerial Serial;
+extern Preferences prefs;
 
 extern KinematicChain Kinematics;
 extern InputChannels channels;

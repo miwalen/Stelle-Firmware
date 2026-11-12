@@ -6,6 +6,8 @@
 
 namespace stelle {
 
+class Preferences;
+
 // NVS: wifi, BT, useIMU, offset.
 //   set*  -> apply langsung ke RAM, tanpa nulis ke flash
 //   save* -> tulis ke NVS
@@ -27,7 +29,7 @@ public:
     Quaternion quaternionOffset;
     Vector3 vector3Offset;
 
-    bool begin();
+    bool begin(Preferences* preferences = nullptr);
     void clearAll();
     void applyConfig();
 
@@ -65,6 +67,8 @@ public:
     QuaternionPacket loadIMUQuaternionOffset();
 
 private:
+    Preferences* _prefs = nullptr;
+
     static void copyField(char* dst, size_t len, const char* src);
     void getString(const char* key, char* out, size_t outLen, const char* defaultValue);
 };
