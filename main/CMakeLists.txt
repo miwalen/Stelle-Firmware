@@ -1,21 +1,30 @@
-# Satu file per komponen Arduino, tidak ada penggabungan.
 idf_component_register(
     SRCS
+        # Entrypoint & Setup
         "setup.cpp"
-        "TwoWire.cpp"
-        "HardwareSerial.cpp"
-        "Preferences.cpp"
-        "ADS1115.cpp"
-        "Communication.cpp"
-        "ConfigManager.cpp"
-        "ForwardKinematicsComputer.cpp"
-        "Logger.cpp"
-        "MechLib.cpp"
-        "Mutexes.cpp"
-        "PowerManager.cpp"
-        "SensorReader.cpp"
+
+        # Drivers & Hardware Wrappers
+        "drivers/TwoWire.cpp"
+        "drivers/HardwareSerial.cpp"
+        "drivers/Preferences.cpp"
+        "drivers/ADS1115.cpp"
+
+        # Core Utilities, Math, & Synchronization
+        "core/Logger.cpp"
+        "core/MechLib.cpp"
+        "core/Mutexes.cpp"
+
+        # Application Tasks & Business Modules
+        "modules/Communication.cpp"
+        "modules/ConfigManager.cpp"
+        "modules/ForwardKinematicsComputer.cpp"
+        "modules/PowerManager.cpp"
+        "modules/SensorReader.cpp"
     INCLUDE_DIRS
         "."
+        "drivers"
+        "core"
+        "modules"
     REQUIRES
         driver
         nvs_flash
