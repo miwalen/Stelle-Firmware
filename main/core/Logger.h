@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
@@ -87,41 +88,38 @@ public:
         }
     }
 
-    void readUnread(char* outBuffer) {
-        if (unreadStartIndex == writeIndex && !unreadFull) {
-            outBuffer[0] = '\0';
-            return;
-        }
+    void readUnread(char* outBuffer, std::size_t outBufferSize) {
+        if (outBuffer == nullptr || outBufferSize == 0) return;
 
+        const std::size_t unreadLength =
+            unreadFull ? BUFFER_SIZE : (writeIndex - unreadStartIndex + BUFFER_SIZE) % BUFFER_SIZE;
+        const std::size_t length =
+            unreadLength < outBufferSize - 1 ? unreadLength : outBufferSize - 1;
         int current = unreadStartIndex;
-        int length = 0;
 
-        // Gunakan do-while untuk menangani kasus unreadFull (posisi sama tapi terisi)
-        do {
-            outBuffer[length++] = buffer[current];
+        for (std::size_t i = 0; i < length; ++i) {
+            outBuffer[i] = buffer[current];
             current = advance(current);
-        } while (current != writeIndex);
-
+        }
         outBuffer[length] = '\0';
 
         unreadStartIndex = writeIndex;
         unreadFull = false;
     }
 
-    void readAllHistory(char* outBuffer) const {
-        if (oldestIndex == writeIndex && !bufferFull) {
-            outBuffer[0] = '\0';
-            return;
-        }
+    void readAllHistory(char* outBuffer, std::size_t outBufferSize) const {
+        if (outBuffer == nullptr || outBufferSize == 0) return;
 
-        int length = 0;
+        const std::size_t historyLength =
+            bufferFull ? BUFFER_SIZE : (writeIndex - oldestIndex + BUFFER_SIZE) % BUFFER_SIZE;
+        const std::size_t length =
+            historyLength < outBufferSize - 1 ? historyLength : outBufferSize - 1;
         int current = oldestIndex;
 
-        do {
-            outBuffer[length++] = buffer[current];
+        for (std::size_t i = 0; i < length; ++i) {
+            outBuffer[i] = buffer[current];
             current = advance(current);
-        } while (current != writeIndex);
-
+        }
         outBuffer[length] = '\0';
     }
 };

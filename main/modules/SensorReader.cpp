@@ -45,9 +45,11 @@ void TaskSensorReader(void* parameter) {
 
         if (!ads1.isOk()) {
             logW(log1, "ADS1115 1 read error (I2C/timeout)");
+            vTaskDelay(pdMS_TO_TICKS(10000));
         }
         if (!ads2.isOk()) {
             logW(log1, "ADS1115 2 read error (I2C/timeout)");
+            vTaskDelay(pdMS_TO_TICKS(10000));
         }
 
         if (xSemaphoreTake(mutexJoints, portMAX_DELAY)) {

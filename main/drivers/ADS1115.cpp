@@ -27,7 +27,7 @@ bool ADS1115::begin(TwoWire& wirePort, uint8_t address) {
 bool ADS1115::isConnected() {
     if (!_wire) return false;
     _wire->beginTransmission(_address);
-    return (_wire->endTransmission() == 0);
+    return (_wire->endTransmission() == 0 || _wire->endTransmission() == 4);
 }
 
 void ADS1115::setPGA(PGA pga) { _pga = pga; }

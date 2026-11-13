@@ -20,7 +20,7 @@ void writeLine(Logger& target, const char* prefix, const char* fmt, va_list args
     vsnprintf(line, sizeof(line), fmt, args);
 
     char prefixed[LOG_LINE_MAX + 16];
-    snprintf(prefixed, sizeof(prefixed), "[%s] %s", prefix, line);
+    snprintf(prefixed, sizeof(prefixed), "[%s] %s %s", prefix, line, "\n");
 
     if (xSemaphoreTake(mutexLog, portMAX_DELAY)) {
         target.log(prefixed);

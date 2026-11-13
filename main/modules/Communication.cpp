@@ -327,10 +327,10 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
 
         case Cmd::GetLogUnread:
             if (len == 0) {
-                char logBuffer[257];
+                char logBuffer[1025];
 
                 if (xSemaphoreTake(mutexLog, portMAX_DELAY)) {
-                    log1.readUnread(logBuffer);
+                    log1.readUnread(logBuffer, sizeof(logBuffer));
                     xSemaphoreGive(mutexLog);
                 }
 
@@ -345,10 +345,10 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
 
         case Cmd::GetLogAllHistory:
             if (len == 0) {
-                char logBuffer[257];
+                char logBuffer[1025];
 
                 if (xSemaphoreTake(mutexLog, portMAX_DELAY)) {
-                    log1.readAllHistory(logBuffer);
+                    log1.readAllHistory(logBuffer, sizeof(logBuffer));
                     xSemaphoreGive(mutexLog);
                 }
 
