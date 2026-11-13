@@ -11,6 +11,8 @@ idf_component_register(
     INCLUDE_DIRS
         "."
     REQUIRES
+        drivers
+        core
         driver
         nvs_flash
         log

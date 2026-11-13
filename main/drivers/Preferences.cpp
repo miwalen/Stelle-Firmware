@@ -94,9 +94,6 @@ bool Preferences::remove(const char* key) {
 
 bool Preferences::isKey(const char* key) {
     if (!_started || key == nullptr) return false;
-    uint8_t dummy;
-    size_t len = sizeof(dummy);
-    // Mencoba membaca data sebagai blob 1 byte atau type check
     nvs_type_t type;
     esp_err_t err = nvs_find_key(_handle, key, &type);
     return (err == ESP_OK);

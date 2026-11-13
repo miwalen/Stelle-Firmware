@@ -1,6 +1,7 @@
 #ifndef PREFERENCES_H
 #define PREFERENCES_H
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include "nvs.h"
