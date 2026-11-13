@@ -12,7 +12,6 @@ idf_component_register(
         # Core Utilities, Math, & Synchronization
         "core/Logger.cpp"
         "core/MechLib.cpp"
-        "core/Mutexes.cpp"
 
         # Application Tasks & Business Modules
         "modules/Communication.cpp"

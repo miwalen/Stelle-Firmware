@@ -2,7 +2,6 @@
 
 #include "Communication.h"
 #include "ForwardKinematicsComputer.h"
-#include "Mutexes.h"
 #include "SensorReader.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -12,6 +11,23 @@
 static const char* TAG = "setup";
 
 namespace stelle {
+
+// ============================================================
+// Definisi Mutex Global Sistem (Sentralisasi)
+// ============================================================
+SemaphoreHandle_t mutexPowerState        = NULL;
+SemaphoreHandle_t mutexJoints            = NULL;
+SemaphoreHandle_t mutexChannels          = NULL;
+SemaphoreHandle_t mutexLog               = NULL;
+SemaphoreHandle_t mutexWifiSSID          = NULL;
+SemaphoreHandle_t mutexWifiPassword      = NULL;
+SemaphoreHandle_t mutexBtName            = NULL;
+SemaphoreHandle_t mutexBtPassword        = NULL;
+SemaphoreHandle_t mutexUseIMU            = NULL;
+SemaphoreHandle_t mutexIMUQuaternionOffset = NULL;
+SemaphoreHandle_t mutexQuaternionOffset  = NULL;
+SemaphoreHandle_t mutexVector3Offset     = NULL;
+SemaphoreHandle_t mutexSaveConfig        = NULL;
 
 // ============================================================
 // Definisi Objek Global Sistem (Sentralisasi)
@@ -39,7 +55,19 @@ void setupSystem() {
     ESP_ERROR_CHECK(err);
 
     // 2. Inisialisasi Sinkronisasi & Mutex
-    initMutexes();
+    mutexPowerState          = xSemaphoreCreateMutex();
+    mutexJoints              = xSemaphoreCreateMutex();
+    mutexChannels            = xSemaphoreCreateMutex();
+    mutexLog                 = xSemaphoreCreateMutex();
+    mutexSaveConfig          = xSemaphoreCreateMutex();
+    mutexWifiSSID            = xSemaphoreCreateMutex();
+    mutexWifiPassword        = xSemaphoreCreateMutex();
+    mutexBtName              = xSemaphoreCreateMutex();
+    mutexBtPassword          = xSemaphoreCreateMutex();
+    mutexUseIMU              = xSemaphoreCreateMutex();
+    mutexIMUQuaternionOffset = xSemaphoreCreateMutex();
+    mutexQuaternionOffset    = xSemaphoreCreateMutex();
+    mutexVector3Offset       = xSemaphoreCreateMutex();
 
     // 3. Inisialisasi Logger & Power
     log1.begin();

@@ -1,9 +1,9 @@
 #include "PowerManager.h"
 
-#include "Mutexes.h"
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "setup.h"
 
 namespace stelle {
 
