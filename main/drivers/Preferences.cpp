@@ -3,8 +3,28 @@
 #include <cmath>
 #include <cstring>
 #include "esp_err.h"
+#include "nvs_flash.h"
 
 namespace stelle {
+
+namespace {
+bool s_nvsInitialized = false;
+}
+
+bool Preferences::initStorage() {
+    if (s_nvsInitialized) return true;
+
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    if (err == ESP_OK) {
+        s_nvsInitialized = true;
+        return true;
+    }
+    return false;
+}
 
 Preferences::Preferences() : _handle(0), _readOnly(false), _started(false) {}
 
@@ -16,6 +36,12 @@ bool Preferences::begin(const char* name, bool readOnly, const char* partition_l
     if (_started) {
         return false;
     }
+
+    // Pastikan storage NVS sudah terinisialisasi secara transparan
+    if (!s_nvsInitialized && !initStorage()) {
+        return false;
+    }
+
     _readOnly = readOnly;
     esp_err_t err;
 

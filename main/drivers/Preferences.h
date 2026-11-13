@@ -26,6 +26,9 @@ public:
     Preferences(const Preferences&) = delete;
     Preferences& operator=(const Preferences&) = delete;
 
+    // Inisialisasi NVS storage (otomatis menangani nvs_flash_init / erase jika corrupt)
+    static bool initStorage();
+
     bool begin(const char* name, bool readOnly = false, const char* partition_label = nullptr);
     void end();
 

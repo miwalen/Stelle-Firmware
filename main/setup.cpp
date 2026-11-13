@@ -6,7 +6,6 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "nvs_flash.h"
 
 static const char* TAG = "setup";
 
@@ -46,15 +45,7 @@ Logger log1;
 void setupSystem() {
     ESP_LOGI(TAG, "Initializing Stelle ESP-IDF Firmware...");
 
-    // 1. Inisialisasi NVS Flash
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        err = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(err);
-
-    // 2. Inisialisasi Sinkronisasi & Mutex
+    // 1. Inisialisasi Sinkronisasi & Mutex
     mutexPowerState          = xSemaphoreCreateMutex();
     mutexJoints              = xSemaphoreCreateMutex();
     mutexChannels            = xSemaphoreCreateMutex();
@@ -69,15 +60,15 @@ void setupSystem() {
     mutexQuaternionOffset    = xSemaphoreCreateMutex();
     mutexVector3Offset       = xSemaphoreCreateMutex();
 
-    // 3. Inisialisasi Logger & Power
+    // 2. Inisialisasi Logger & Power
     log1.begin();
     currentPowerState.begin();
     initTaskPowerKeeper();
 
-    // 4. Inisialisasi Bus Peripheral Hardware (I2C SDA=25, SCL=26)
+    // 3. Inisialisasi Bus Peripheral Hardware (I2C SDA=25, SCL=26)
     Wire1.begin(25, 26);
 
-    // 5. Muat Konfigurasi dari NVS menggunakan Preferences global
+    // 4. Muat Konfigurasi dari NVS menggunakan Preferences global
     config.begin(&prefs);
 
     // 6. Jalankan FreeRTOS Tasks
