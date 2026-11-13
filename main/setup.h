@@ -8,6 +8,13 @@
 #include "PowerManager.h"
 #include "Preferences.h"
 #include "TwoWire.h"
+#include "ADS1115.h"
+#include "Communication.h"
+#include "ForwardKinematicsComputer.h"
+#include "SensorReader.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
@@ -43,7 +50,8 @@ extern InputChannels channels;
 extern ConfigManager config;
 extern PowerState currentPowerState;
 extern Logger log1;
-
+extern ADS1115 ads1;
+extern ADS1115 ads2;
 // Entrypoint inisialisasi sistem firmware
 void setupSystem();
 

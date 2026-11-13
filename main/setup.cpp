@@ -1,12 +1,5 @@
 #include "setup.h"
 
-#include "Communication.h"
-#include "ForwardKinematicsComputer.h"
-#include "SensorReader.h"
-#include "esp_log.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
 static const char* TAG = "setup";
 
 namespace stelle {
@@ -32,6 +25,8 @@ SemaphoreHandle_t mutexSaveConfig        = NULL;
 // Definisi Objek Global Sistem (Sentralisasi)
 // ============================================================
 TwoWire Wire1;
+ADS1115 ads1;
+ADS1115 ads2;
 HardwareSerial SerialComA(1);
 HardwareSerial Serial(0);
 Preferences prefs;
@@ -67,7 +62,8 @@ void setupSystem() {
 
     // 3. Inisialisasi Bus Peripheral Hardware (I2C SDA=25, SCL=26)
     Wire1.begin(25, 26);
-
+    ads1.begin(Wire1, ADS1115::ADDR_GND);
+    ads2.begin(Wire1, ADS1115::ADDR_SDA);
     // 4. Muat Konfigurasi dari NVS menggunakan Preferences global
     config.begin(&prefs);
 

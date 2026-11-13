@@ -11,21 +11,16 @@ namespace stelle {
 
 TaskHandle_t TaskSensorReaderHandle = NULL;
 
-ADS1115 ads1;
-ADS1115 ads2;
-
 // Hasil pembacaan terakhir untuk 2 ADS x 3 channel
 static float raw[2][3] = {0};
 
 void initTaskSensorReader() {
-    const bool adsOk = ads1.begin(Wire1, ADS1115::ADDR_GND) && ads2.begin(Wire1, ADS1115::ADDR_SDA);
-
-    if (!adsOk) {
-        logE(log1, "ADS1115: one or all failed, check the wiring");
-    } else {
-        logI(log1, "ADS1115: all present");
+    if (!ads1.isOk()) {
+        logW(log1, "ADS1115 1 is not OK (I2C/timeout)");
     }
-
+    if (!ads2.isOk()) {
+        logW(log1, "ADS1115 2 is not OK (I2C/timeout)");
+    }
     xTaskCreatePinnedToCore(TaskSensorReader, "SensorReader_Task", 4096, NULL, 1, &TaskSensorReaderHandle, 1);
 }
 
@@ -41,15 +36,6 @@ void TaskSensorReader(void* parameter) {
         for (uint8_t ch = 0; ch < 3; ch++) {
             raw[0][ch] = (float)ads1.readRaw(ch);
             raw[1][ch] = (float)ads2.readRaw(ch);
-        }
-
-        if (!ads1.isOk()) {
-            logW(log1, "ADS1115 1 read error (I2C/timeout)");
-            vTaskDelay(pdMS_TO_TICKS(10000));
-        }
-        if (!ads2.isOk()) {
-            logW(log1, "ADS1115 2 read error (I2C/timeout)");
-            vTaskDelay(pdMS_TO_TICKS(10000));
         }
 
         if (xSemaphoreTake(mutexJoints, portMAX_DELAY)) {
