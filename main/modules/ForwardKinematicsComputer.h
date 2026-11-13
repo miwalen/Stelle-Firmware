@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MechLib.h"
 #include "freertos/FreeRTOS.h"
 
 namespace stelle {

@@ -2,8 +2,10 @@
 
 #include <cstring>
 #include "Logger.h"
+#include "Packets.h"
 #include "Preferences.h"
-#include "setup.h"
+
+
 
 namespace stelle {
 

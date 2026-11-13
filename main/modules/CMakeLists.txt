@@ -10,10 +10,12 @@ idf_component_register(
         "SensorReader.cpp"
     INCLUDE_DIRS
         "."
+        ".."
     REQUIRES
         drivers
         core
         driver
+        esp_driver_gpio
         nvs_flash
         log
         freertos

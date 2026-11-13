@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "GeoLib.h"
+#include "Packets.h"
 
 namespace stelle {
 

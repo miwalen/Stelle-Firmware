@@ -8,7 +8,7 @@ import queue
 # KONFIGURASI PROTOKOL & SERIAL
 # ==========================================
 # Sesuaikan port dengan OS Anda (Misal: 'COM3' untuk Windows, '/dev/ttyUSB0' untuk Linux/Mac)
-SERIAL_PORT = 'COM12' 
+SERIAL_PORT = 'COM16' 
 BAUD_RATE = 115200
 
 # Sesuaikan nilai header ini dengan definisi HEADER_1 dan HEADER_2 di Communication.h Anda

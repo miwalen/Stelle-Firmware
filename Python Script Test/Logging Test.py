@@ -4,7 +4,7 @@ import threading
 import serial
 
 # ====== SESUAIKAN ======
-PORT = "COM12"          # Linux: "/dev/ttyUSB0"
+PORT = "COM16"          # Linux: "/dev/ttyUSB0"
 BAUD = 115200
 HEADER_1 = 0xAA        # ganti sesuai Communication.h
 HEADER_2 = 0x55        # ganti sesuai Communication.h

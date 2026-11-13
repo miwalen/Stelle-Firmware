@@ -7,6 +7,7 @@
 
 namespace stelle {
 
+
 class ADS1115 {
 public:
     // Default I2C Addresses
@@ -47,7 +48,7 @@ public:
     ADS1115(uint8_t address = ADDR_GND);
 
     // Inisialisasi Wire & Address
-    bool begin(TwoWire& wirePort = Wire1, uint8_t address = 0);
+    bool begin(TwoWire& wirePort, uint8_t address = 0);
 
     // Status checks
     bool isConnected();

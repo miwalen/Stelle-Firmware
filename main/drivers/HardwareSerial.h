@@ -8,6 +8,8 @@
 
 namespace stelle {
 
+constexpr uint32_t SERIAL_8N1 = 0x03;
+
 // Pengganti HardwareSerial ESP-IDF.
 //
 // API sama seperti HardwareSerial Arduino: begin(baud, config, rxPin, txPin),
@@ -42,11 +44,9 @@ public:
 private:
     int _uartNum;
     size_t _rxBufferSize = 256;
+    int _peekedByte = -1;
     bool _begun = false;
 };
-
-// Konstanta konfigurasi frame, nilainya mengikuti UART Arduino.
-constexpr uint32_t SERIAL_8N1 = 0x800001c;
 
 } // namespace stelle
 

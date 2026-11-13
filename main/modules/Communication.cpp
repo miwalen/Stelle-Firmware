@@ -218,7 +218,7 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                     uint8_t sendBuffer[12];
                     vp.getPacket(sendBuffer);
 
-                    port.sendFrame(cmd, sendBuffer, static_cast<uint8_t>(vp.size()));
+                    sendFrame(port, cmd, sendBuffer, static_cast<uint8_t>(vp.size()));
                 }
             }
             break;
@@ -238,7 +238,7 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                     uint8_t sendBuffer[16];
                     qp.getPacket(sendBuffer);
 
-                    port.sendFrame(cmd, sendBuffer, static_cast<uint8_t>(qp.size()));
+                    sendFrame(port, cmd, sendBuffer, static_cast<uint8_t>(qp.size()));
                 }
             }
             break;
@@ -259,7 +259,7 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                     uint8_t sendBuffer[sizeof(float)];
                     memcpy(sendBuffer, &angleDeg, sizeof(float));
 
-                    port.sendFrame(cmd, sendBuffer, sizeof(sendBuffer));
+                    sendFrame(port, cmd, sendBuffer, sizeof(sendBuffer));
                 }
             }
             break;
@@ -280,7 +280,7 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                     uint8_t sendBuffer[sizeof(float)];
                     memcpy(sendBuffer, &angleRad, sizeof(float));
 
-                    port.sendFrame(cmd, sendBuffer, sizeof(sendBuffer));
+                    sendFrame(port, cmd, sendBuffer, sizeof(sendBuffer));
                 }
             }
             break;
@@ -294,7 +294,7 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                     xSemaphoreGive(mutexJoints);
                 }
 
-                port.sendFrame(cmd, &jointCount, 1);
+                sendFrame(port, cmd, &jointCount, 1);
             }
             break;
 
@@ -321,7 +321,7 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                 uint8_t sendBuffer[sizeof(InputChannelsPacket)];
                 icp.getPacket(sendBuffer);
 
-                port.sendFrame(cmd, sendBuffer, static_cast<uint8_t>(icp.size()));
+                sendFrame(port, cmd, sendBuffer, static_cast<uint8_t>(icp.size()));
             }
             break;
 
@@ -337,9 +337,9 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                 uint16_t logLen = strlen(logBuffer);
                 if (logLen > 255) logLen = 255;
 
-                port.sendFrame(Cmd::ReplyLog,
-                               reinterpret_cast<const uint8_t*>(logBuffer),
-                               (uint8_t)logLen);
+                sendFrame(port, Cmd::ReplyLog,
+                          reinterpret_cast<const uint8_t*>(logBuffer),
+                          static_cast<uint8_t>(logLen));
             }
             break;
 
@@ -355,9 +355,9 @@ void executeCommand(HardwareSerial& port, Cmd cmd, uint8_t* payload, uint8_t len
                 uint16_t logLen = strlen(logBuffer);
                 if (logLen > 255) logLen = 255;
 
-                port.sendFrame(Cmd::ReplyLog,
-                               reinterpret_cast<const uint8_t*>(logBuffer),
-                               (uint8_t)logLen);
+                sendFrame(port, Cmd::ReplyLog,
+                          reinterpret_cast<const uint8_t*>(logBuffer),
+                          static_cast<uint8_t>(logLen));
             }
             break;
 

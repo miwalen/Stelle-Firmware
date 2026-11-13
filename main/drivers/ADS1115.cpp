@@ -1,13 +1,12 @@
 #include "ADS1115.h"
 
-#include "Logger.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 namespace stelle {
 
 ADS1115::ADS1115(uint8_t address)
-    : _address(address), _wire(&Wire1), _pga(PGA_4_096V), _dataRate(DR_860SPS), _isOk(false) {}
+    : _address(address), _pga(PGA_4_096V), _dataRate(DR_860SPS), _isOk(false) {}
 
 bool ADS1115::begin(TwoWire& wirePort, uint8_t address) {
     _wire = &wirePort;

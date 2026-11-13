@@ -69,6 +69,7 @@ bool HardwareSerial::begin(unsigned long baud, uint32_t config, int8_t rxPin, in
 void HardwareSerial::end() {
     if (!_begun) return;
     uart_driver_delete(static_cast<uart_port_t>(_uartNum));
+    _peekedByte = -1;
     _begun = false;
 }
 
@@ -78,11 +79,17 @@ int HardwareSerial::available() {
     if (uart_get_buffered_data_len(static_cast<uart_port_t>(_uartNum), &buffered) != ESP_OK) {
         return 0;
     }
-    return static_cast<int>(buffered);
+    return static_cast<int>(buffered) + (_peekedByte >= 0 ? 1 : 0);
 }
 
 int HardwareSerial::read() {
     if (!_begun) return -1;
+    if (_peekedByte >= 0) {
+        const int byte = _peekedByte;
+        _peekedByte = -1;
+        return byte;
+    }
+
     uint8_t byte = 0;
     const int got = uart_read_bytes(static_cast<uart_port_t>(_uartNum), &byte, 1, READ_TIMEOUT);
     return got == 1 ? static_cast<int>(byte) : -1;
@@ -90,14 +97,13 @@ int HardwareSerial::read() {
 
 int HardwareSerial::peek() {
     if (!_begun) return -1;
+    if (_peekedByte >= 0) return _peekedByte;
+
     uint8_t byte = 0;
-    size_t buffered = 0;
-    if (uart_get_buffered_data_len(static_cast<uart_port_t>(_uartNum), &buffered) != ESP_OK) {
-        return -1;
-    }
-    if (buffered == 0) return -1;
-    if (uart_peek_byte(static_cast<uart_port_t>(_uartNum), &byte) != ESP_OK) return -1;
-    return static_cast<int>(byte);
+    const int got = uart_read_bytes(static_cast<uart_port_t>(_uartNum), &byte, 1, READ_TIMEOUT);
+    if (got != 1) return -1;
+    _peekedByte = byte;
+    return _peekedByte;
 }
 
 size_t HardwareSerial::write(uint8_t value) {
