@@ -19,11 +19,12 @@ bool Preferences::initStorage() {
         ESP_ERROR_CHECK(nvs_flash_erase());
         err = nvs_flash_init();
     }
-    if (err == ESP_OK) {
-        s_nvsInitialized = true;
-        return true;
+    if (err != ESP_OK) {
+      return false;  
     }
-    return false;
+    s_nvsInitialized = true;
+    return true;
+    
 }
 
 Preferences::Preferences() : _handle(0), _readOnly(false), _started(false) {}

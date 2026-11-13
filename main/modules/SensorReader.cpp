@@ -26,8 +26,7 @@ void initTaskSensorReader() {
         logI(log1, "ADS1115: all present");
     }
 
-    xTaskCreatePinnedToCore(TaskSensorReader, "SensorReader_Task", 4096, NULL, 1,
-                            &TaskSensorReaderHandle, 1);
+    xTaskCreatePinnedToCore(TaskSensorReader, "SensorReader_Task", 4096, NULL, 1, &TaskSensorReaderHandle, 1);
 }
 
 void TaskSensorReader(void* parameter) {
